@@ -1,46 +1,68 @@
 package crawler;
 
+import crawler.config.Config;
+import crawler.model.crawlConfig;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class crontabCrawlNews {
     public static void main(String[] args) throws Exception {
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String nowTime = sdf.format(new Date());
+            String newTime = calculateTime(sdf.parse(nowTime),-1);
+            MySQL MySQL = new MySQL();
+            System.out.println(newTime);
             Reader reader = new Reader();
-            List<Map<String, String>> result = reader.getList("sxxynews");
-            System.out.println(result);
-            getDBConfig();
-        }catch (IOException e) {
+
+            Map<String,crawlConfig> configList = Config.CONFIG_LIST;
+            for (Map.Entry<String, crawlConfig> config : configList.entrySet()) {
+//                System.out.println(config.getKey() + ":" + config.getValue());
+
+                List<Map<String, String>> result = reader.getList(config.getKey(),newTime);
+                for (Map<String, String> data:result){
+//                  System.out.println(data.get("titleImg"));
+//                  System.out.println(data.get("contentLink"));
+//                  System.out.println(data.get("contentText"));
+//                  System.out.println(data.get("contentImg"));
+                    Integer insertID = MySQL.update("insert into news(title,content,image_title,image_content) values('"+
+                            data.get("titleName")+"','"+
+                            data.get("contentText")+"','"+
+                            data.get("titleImg")+"','"+
+                            data.get("contentImg")
+                            +"')");
+                    if(insertID==-1){
+                        System.out.println("sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
+                    }else{
+                        System.out.println("sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    public static void getDBConfig() {
-            Properties properties = new Properties();
-            String configFile = "DBConfig.properties";
-            try {
-                properties.load(new FileInputStream(configFile));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-                return;
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return;
-            }
-
-            // 第二個參數為預設值，如果沒取到值的時候回傳預設值
-            String host = properties.getProperty("host", "jdbc:mysql://localhost/default");
-            String username = properties.getProperty("username");
-            String password = properties.getProperty("password", "");
-            System.out.println(host);
-            System.out.println(username);
-            System.out.println(password);
+    /**
+     * 計算日期
+     * @param time 計算的時間
+     * @param day 計算的天數
+     * @return
+     * @throws Exception
+    */
+    public static String calculateTime(Date time,int day) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+        cal.add(Calendar.DATE, day);
+        String newTime = sdf.format(cal.getTime());
+        return newTime;
     }
 }
