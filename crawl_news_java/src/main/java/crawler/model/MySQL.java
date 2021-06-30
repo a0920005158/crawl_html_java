@@ -1,4 +1,4 @@
-package crawler;
+package crawler.model;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

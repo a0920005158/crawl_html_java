@@ -1,21 +1,22 @@
-package crawler;
+package crawler.model;
 
 import crawler.config.Config;
-import crawler.model.crawlConfig;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class crontabCrawlNews {
-    public static void main(String[] args) throws Exception {
+    public void crontabCrawlNews(){
+
+    }
+    public void excute() throws Exception {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String nowTime = sdf.format(new Date());
             String newTime = calculateTime(sdf.parse(nowTime),-1);
+            //newTime = "2021-06-28";
             MySQL MySQL = new MySQL();
             System.out.println(newTime);
             Reader reader = new Reader();
@@ -41,6 +42,10 @@ public class crontabCrawlNews {
                     }else{
                         System.out.println("sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
                     }
+                    new LoggerTool("D:\\test\\vcmslog");
+                    LoggerTool.infoMsg(nowTime+" crawl_news",
+                            "sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"},"+
+                                    "sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
                 }
             }
         } catch (IOException e) {
@@ -49,7 +54,6 @@ public class crontabCrawlNews {
             e.printStackTrace();
         }
     }
-
     /**
      * 計算日期
      * @param time 計算的時間
@@ -57,7 +61,7 @@ public class crontabCrawlNews {
      * @return
      * @throws Exception
     */
-    public static String calculateTime(Date time,int day) throws Exception {
+    public String calculateTime(Date time,int day) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);
