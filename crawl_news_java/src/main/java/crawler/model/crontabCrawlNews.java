@@ -8,24 +8,24 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class crontabCrawlNews {
-    public void crontabCrawlNews(){
-
+    private String nowTime = "";
+    private String crawlNewsTime = "";
+    public crontabCrawlNews() throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        this.nowTime = sdf.format(new Date());
+        this.crawlNewsTime = this.calculateTime(sdf.parse(this.nowTime),-1);
     }
     public void excute() throws Exception {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String nowTime = sdf.format(new Date());
-            String newTime = calculateTime(sdf.parse(nowTime),-1);
-            //newTime = "2021-06-28";
             MySQL MySQL = new MySQL();
-            System.out.println(newTime);
+            System.out.println("crawlNewsTime: " + this.crawlNewsTime);
             Reader reader = new Reader();
 
             Map<String,crawlConfig> configList = Config.CONFIG_LIST;
             for (Map.Entry<String, crawlConfig> config : configList.entrySet()) {
 //                System.out.println(config.getKey() + ":" + config.getValue());
 
-                List<Map<String, String>> result = reader.getList(config.getKey(),newTime);
+                List<Map<String, String>> result = reader.getList(config.getKey(),this.crawlNewsTime);
                 for (Map<String, String> data:result){
 //                  System.out.println(data.get("titleImg"));
 //                  System.out.println(data.get("contentLink"));
@@ -37,20 +37,25 @@ public class crontabCrawlNews {
                             data.get("titleImg")+"','"+
                             data.get("contentImg")
                             +"')");
+                    String sqlInsetError = "sqlInsetError:{}";
+                    String sqlInsetSuccess = "sqlInsetSuccess:{}";
                     if(insertID==-1){
                         System.out.println("sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
+                        sqlInsetError = "sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}";
                     }else{
                         System.out.println("sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
+                        sqlInsetSuccess = "sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}";
                     }
-                    new LoggerTool("D:\\test\\vcmslog");
+                    new LoggerTool("log");
                     LoggerTool.infoMsg(nowTime+" crawl_news",
-                            "sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"},"+
-                                    "sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
+                            sqlInsetSuccess+" ,"+sqlInsetError);
                 }
             }
         } catch (IOException e) {
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 IOException 錯誤: " + e);
             e.printStackTrace();
         } catch (ParseException e) {
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 ParseException 錯誤: " + e);
             e.printStackTrace();
         }
     }

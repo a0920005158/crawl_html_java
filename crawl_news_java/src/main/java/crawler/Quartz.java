@@ -1,5 +1,6 @@
 package crawler;
 
+import crawler.model.LoggerTool;
 import org.apache.log4j.BasicConfigurator;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -31,7 +32,7 @@ public class Quartz {
             // 觸發Job執行
             Trigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity("trigger1", "crawl-news")
-                    .withSchedule(cronSchedule("0 15 18 ? * *"))
+                    .withSchedule(cronSchedule("0 0 7 ? * *"))
                     .build();
 
 
@@ -42,6 +43,7 @@ public class Quartz {
 
         } catch (SchedulerException se) {
             se.printStackTrace();
+            LoggerTool.infoMsg(nowTime+" excutError","處理 SchedulerException 錯誤: " + se);
         }
     }
 }

@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 
 public class LoggerTool {
     private static Logger logger;
-    private static String filepath;
+    private static String filepath = "log";
     public LoggerTool(String path){      //path:日誌儲存路徑
-        filepath=path;
+        this.filepath=path;
         new File(filepath).mkdir();  //建立資料夾
     }
     public static void infoMsg(String filename,String msg){       //filename:生成日誌的檔名  msg:日誌資訊

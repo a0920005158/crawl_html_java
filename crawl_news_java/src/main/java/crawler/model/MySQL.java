@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 public class MySQL {
     // MySQL 8.0 以上版本 - JDBC 驅動名及資料庫 URL
@@ -12,13 +14,15 @@ public class MySQL {
     private String DB_URL = "";
     private String username = "";
     private String password = "";
-
+    private String nowTime = "";
 
     public MySQL() {
         Map<String,String> dbConfig = getDBConfig();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         this.DB_URL = "jdbc:mysql://"+dbConfig.get("host")+":"+dbConfig.get("port")+"/"+getDBConfig().get("dbName");
         this.username = dbConfig.get("username");
         this.password = dbConfig.get("password");
+        this.nowTime = sdf.format(new Date());
         System.out.println(this.DB_URL);
     }
 
@@ -57,8 +61,10 @@ public class MySQL {
         }catch(SQLException se){
             // 處理 JDBC 錯誤
             se.printStackTrace();
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 JDBC 錯誤: " + se);
         }catch(Exception e){
             // 處理 Class.forName 錯誤
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + e);
             e.printStackTrace();
         }finally{
             // 關閉資源
@@ -106,19 +112,23 @@ public class MySQL {
         }catch(SQLException se){
             // 處理 JDBC 錯誤
             se.printStackTrace();
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + se);
         }catch(Exception e){
             // 處理 Class.forName 錯誤
             e.printStackTrace();
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + e);
         }finally{
             // 關閉資源
             try{
                 if(ps!=null) ps.close();
             }catch(SQLException se2){
+                LoggerTool.infoMsg(this.nowTime+" excutError","處理 SQLException 錯誤: " + se2);
             }// 什麼都不做
             try{
                 if(conn!=null) conn.close();
             }catch(SQLException se){
                 se.printStackTrace();
+                LoggerTool.infoMsg(this.nowTime+" excutError","處理 SQLException 錯誤: " + se);
             }
         }
         System.out.println("連線資料庫結束!");
@@ -132,8 +142,10 @@ public class MySQL {
             properties.load(new FileInputStream(configFile));
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 FileNotFoundException 錯誤: " + ex);
             return null;
         } catch (IOException ex) {
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 IOException 錯誤: " + ex);
             ex.printStackTrace();
             return null;
         }
@@ -148,7 +160,7 @@ public class MySQL {
 //        System.out.println(username);
 //        System.out.println(password);
 //        System.out.println(dbName);
-        Map<String,String> sql_con = new HashMap<>(){{
+        Map<String,String> sql_con = new HashMap(){{
             put("host",host);
             put("username",username);
             put("password",password);

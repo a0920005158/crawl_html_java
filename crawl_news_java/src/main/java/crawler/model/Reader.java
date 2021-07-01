@@ -12,6 +12,7 @@ import javax.imageio.stream.FileImageOutputStream;
 import java.io.*;
 import java.net.SocketTimeoutException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.Base64;
@@ -23,6 +24,8 @@ public class Reader {
     private final CookieJar cookieJar;
     private String contnetText;
     private String urlName;
+    private String nowTime = "";
+
     public Reader() throws IOException {
         /* 初始化 */
         this.cookieStore = new HashMap<>();
@@ -39,8 +42,12 @@ public class Reader {
                 return cookieStore.getOrDefault(httpUrl.host(), new ArrayList<>());
             }
         };
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        this.nowTime = sdf.format(new Date());
         this.contnetText = "";
         this.urlName = "";
+
     }
 //    List<Content>
     public List<Map<String, String>> getList(String urlName,String date) throws IOException, ParseException ,Exception{
@@ -57,12 +64,10 @@ public class Reader {
                 .readTimeout(15, TimeUnit.SECONDS).cookieJar(this.cookieJar)
                 .connectionPool(new ConnectionPool(32,15,TimeUnit.MINUTES)).build();
 
-        /* 獲得網站的初始 Cookie */
-        Response response = this.getHttpRequest(configList.getUrl());
-        if (response == null) {
+        String body = PostData_Request(configList.getUrl(),"GET",configList.getTitleHeader(),new HashMap<>());
+        if (body == "false") {
             return null;
         }
-        String body = response.body().string();
 
         /* 轉換 HTML 到 Article */
         List<Map<String, String>> parseResult = parseBody(body,configList,date);
@@ -70,8 +75,9 @@ public class Reader {
         return parseResult;
     }
 
-    private Response getHttpRequest(String requestUrl) throws IOException {
-        Request request = new Request.Builder().url(requestUrl).get().build();
+    private Response postHttpRequest(String requestUrl, String json) throws IOException {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder().url(requestUrl).post(requestBody).build();
         Response response = null;
         Integer errorTime = 0;
         while (response == null && errorTime < 5) {
@@ -79,11 +85,26 @@ public class Reader {
                 response = this.okHttpClient.newCall(request).execute();
             }catch (SocketTimeoutException te){
                 response = this.okHttpClient.newCall(request).execute();
+                if(errorTime==4)
+                    LoggerTool.infoMsg(this.nowTime+" excutError","處理 connectTimeout 錯誤: " + te);
             }
             errorTime++;
         }
         return response;
     }
+
+    private String PostData_Request(String url, String method, Map<String,String> headers, Map<String,String> body) throws IOException {
+        String serverURL = "http://games.v9ex.com:8088/PayJump/PostJump_Request.php";
+        Map<String,String> array_jumppost= new HashMap(){{
+            put("uri",url);
+            put("method",method);
+            put("headers", new JSONObject(headers));
+            put("body", new JSONObject(body));
+        }};
+        Response response = postHttpRequest(serverURL, new JSONObject(array_jumppost).toString());
+        return new JSONObject(response.body().string()).getString("response");
+    }
+
     /* 解析標題文章列表 */
     private List<Map<String, String>> parseBody(String body,crawlConfig configList,String date) throws ParseException,Exception{
         List<Map<String, String>> result = new ArrayList<>();
@@ -127,8 +148,7 @@ public class Reader {
 
     private List<Map<String, String>> getCrawlList(String contentLink,crawlConfig configList,String titleImg,String CISelector,String titleName) throws IOException,Exception{
         List<Map<String, String>> result = new ArrayList<>();
-        Response contentResponse = getHttpRequest(contentLink);
-        String contentBody = contentResponse.body().string();
+        String contentBody = PostData_Request(contentLink,"GET",configList.getContentHeader(),new HashMap<>());
         Document contentDoc = Jsoup.parse(contentBody);
         Elements contentList = contentDoc.select(configList.getContentItem());
         String titleImgBase64 = titleImg==""?"":downloadImage(titleImg);
@@ -137,7 +157,7 @@ public class Reader {
         String titleImgRoute = titleImgId==-1?"":Integer.toString(titleImgId);
         this.contnetText = this.htmlFilter(contentList.html());
         String contentImgRoute = getContentImgUrls(contentList,CISelector,contentLink);
-        result.add(new HashMap<>(){{
+        result.add(new HashMap(){{
             put("titleImg", titleImgRoute);
             put("titleName", titleName);
             put("contentLink", contentLink);
@@ -228,10 +248,11 @@ public class Reader {
         int randomNo=(int)(Math.random()*1000000);
         String filename=url.substring(url.lastIndexOf("/")+1,url.length());//獲取服務器上圖片的名稱
         filename = new java.text.SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())+randomNo+filename;//時間+隨機數防止重復
-        Response response = this.getHttpRequest(url);
-        byte[] imgBytes = response.body().bytes();
-        String imgBase64 = Base64.getEncoder().encodeToString(imgBytes);
-        return imgBase64;
+        String response = PostData_Request(url,"GET",new HashMap<>(),new HashMap<>());
+//        byte[] imgBytes = response.body().bytes();
+//        String imgBase64 = Base64.getEncoder().encodeToString(imgBytes);
+//        return imgBase64;
+        return response;
     }
 
     private void byte2image(byte[] data,String path) {
@@ -241,6 +262,7 @@ public class Reader {
             imageOutput.write(data, 0, data.length);//将byte写入硬盘
             imageOutput.close();
         } catch (Exception ex) {
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Exception 錯誤: " + ex);
             ex.printStackTrace();
         }
     }
