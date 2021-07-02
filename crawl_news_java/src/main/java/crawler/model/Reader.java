@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.Base64;
 import org.json.JSONObject;
+
 //TODO 待優化
 public class Reader {
     private OkHttpClient okHttpClient;
@@ -126,7 +127,9 @@ public class Reader {
                 String contentLink = this.getJsonString(titleItemStr,CLSelector);
                 String DateLimit = this.getJsonString(titleItemStr,TDSelector);
                 if(contentLink!="" && DateLimit.contains(date)){
-                    result = this.getCrawlList(contentLink,configList,titleImg,CISelector,titleName);
+                    result.add(
+                        getCrawlList(contentLink,configList,titleImg,CISelector,titleName)
+                    );
                 }
             }
         }else{
@@ -138,7 +141,9 @@ public class Reader {
                 String contentLink = CLSelector==""?"":tiElement.select(CLSelector).attr("href");
                 String DateLimit = tiElement.select(TDSelector).text();
                 if(contentLink!="" && DateLimit.contains(date)){
-                    result = this.getCrawlList(contentLink,configList,titleImg,CISelector,titleName);
+                    result.add(
+                        getCrawlList(contentLink,configList,titleImg,CISelector,titleName)
+                    );
                 }
             }
         }
@@ -146,8 +151,8 @@ public class Reader {
         return result;
     }
 
-    private List<Map<String, String>> getCrawlList(String contentLink,crawlConfig configList,String titleImg,String CISelector,String titleName) throws IOException,Exception{
-        List<Map<String, String>> result = new ArrayList<>();
+    private Map<String, String> getCrawlList(String contentLink,crawlConfig configList,String titleImg,String CISelector,String titleName) throws IOException,Exception{
+        Map<String, String> result = new HashMap<>();
         String contentBody = PostData_Request(contentLink,"GET",configList.getContentHeader(),new HashMap<>());
         Document contentDoc = Jsoup.parse(contentBody);
         Elements contentList = contentDoc.select(configList.getContentItem());
@@ -155,24 +160,31 @@ public class Reader {
         MySQL MySQL = new MySQL();
         Integer titleImgId = MySQL.update("insert into news_title_image(image_blob) values('"+titleImgBase64+"')");
         String titleImgRoute = titleImgId==-1?"":Integer.toString(titleImgId);
-        this.contnetText = this.htmlFilter(contentList.html());
+        this.contnetText = this.contentFilter(contentList.html());
         String contentImgRoute = getContentImgUrls(contentList,CISelector,contentLink);
-        result.add(new HashMap(){{
+        result = new HashMap(){{
             put("titleImg", titleImgRoute);
             put("titleName", titleName);
             put("contentLink", contentLink);
             put("contentText", contnetText);
             put("contentImg", contentImgRoute);
-        }});
+        }};
         return result;
     }
 
-    private String htmlFilter(String html){
+    private String contentFilter(String html){
         html = html.replaceAll("/<script(.*?)</script>/i", "");
         html = html.replaceAll("/<style(.*?)/style>/i", "");
         html = html.replaceAll("/<frame(.*?)>/i", "");
         html = html.replaceAll("/<iframe(.*?)</iframe>/i", "");
         html = html.replaceAll("/<link(.*?)>/i", "");
+        Document contentDoc = Jsoup.parse(html);
+        switch (this.urlName){
+            case "tags":
+                contentDoc.select(".article-notice").remove();
+                html = contentDoc.html();
+                break;
+        }
         return html;
     }
 
@@ -266,8 +278,6 @@ public class Reader {
             ex.printStackTrace();
         }
     }
-
-
 
     private String[] delete(String []n,Integer index) {
         Integer j=0;
