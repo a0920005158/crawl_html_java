@@ -23,33 +23,29 @@ public class crontabCrawlNews {
 
             Map<String,crawlConfig> configList = Config.CONFIG_LIST;
             for (Map.Entry<String, crawlConfig> config : configList.entrySet()) {
-//                System.out.println(config.getKey() + ":" + config.getValue());
-
+                List<String> sqlInsetSuccess = new ArrayList<>();
+                List<String> sqlInsetError = new ArrayList<>();
                 List<Map<String, String>> result = reader.getList(config.getKey(),this.crawlNewsTime);
                 for (Map<String, String> data:result){
-//                  System.out.println(data.get("titleImg"));
-//                  System.out.println(data.get("contentLink"));
-//                  System.out.println(data.get("contentText"));
-//                  System.out.println(data.get("contentImg"));
                     Integer insertID = MySQL.update("insert into news(title,content,image_title,image_content) values('"+
                             data.get("titleName")+"','"+
                             data.get("contentText")+"','"+
                             data.get("titleImg")+"','"+
                             data.get("contentImg")
                             +"')");
-                    String sqlInsetError = "sqlInsetError:{}";
-                    String sqlInsetSuccess = "sqlInsetSuccess:{}";
                     if(insertID==-1){
-                        System.out.println("sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
-                        sqlInsetError = "sqlInsetError:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}";
+                        sqlInsetError.add(
+                                "{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}"
+                        );
                     }else{
-                        System.out.println("sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}");
-                        sqlInsetSuccess = "sqlInsetSuccess:{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}";
+                        sqlInsetSuccess.add(
+                                "{titleName:"+data.get("titleName")+",web:"+config.getKey()+"}"
+                        );
                     }
-                    new LoggerTool("log");
-                    LoggerTool.infoMsg(nowTime+" crawl_news",
-                            sqlInsetSuccess+" ,"+sqlInsetError);
                 }
+                new LoggerTool("log");
+                LoggerTool.infoMsg(nowTime+" crawl_news",
+                        "sqlInsetError: "+sqlInsetSuccess+" ,sqlInsetError: "+sqlInsetError);
             }
         } catch (IOException e) {
             LoggerTool.infoMsg(this.nowTime+" excutError","處理 IOException 錯誤: " + e);

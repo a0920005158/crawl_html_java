@@ -156,10 +156,6 @@ public class MySQL {
         String password = properties.getProperty("password", "");
         String dbName = properties.getProperty("dbName", "");
         String port = properties.getProperty("port", "");
-//        System.out.println(host);
-//        System.out.println(username);
-//        System.out.println(password);
-//        System.out.println(dbName);
         Map<String,String> sql_con = new HashMap(){{
             put("host",host);
             put("username",username);
