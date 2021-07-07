@@ -178,6 +178,7 @@ public class Reader {
         html = html.replaceAll("/<frame(.*?)>/i", "");
         html = html.replaceAll("/<iframe(.*?)</iframe>/i", "");
         html = html.replaceAll("/<link(.*?)>/i", "");
+        html = html.replaceAll("/<!--(.*?)-->/i", "");
         Document contentDoc = Jsoup.parse(html);
         switch (this.urlName){
             case "tags":

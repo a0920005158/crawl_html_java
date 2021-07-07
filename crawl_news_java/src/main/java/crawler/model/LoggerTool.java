@@ -5,6 +5,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 public class LoggerTool {
@@ -31,5 +36,25 @@ public class LoggerTool {
     }
     public Logger getLogger() {
         return logger;
+    }
+
+    public static void deleteExpiredLog() throws ParseException {
+        File folder1 = new File("log");
+        String[] list1 = folder1.list();
+
+        for (int i = 0; i < list1.length; i++) {
+            SimpleDateFormat sdf =   new SimpleDateFormat( "yyyy-MM-dd" );
+            System.out.println(list1[i]);
+            Date createDate = sdf.parse(list1[i].split(" ")[0]);
+            System.out.println(createDate);
+            Calendar now = java.util.Calendar.getInstance();
+            now.add(Calendar.DATE,-3); //3天前日期
+            Date date2 = now.getTime();
+            if(date2.getTime()-createDate.getTime()>0){
+                File file = new File("log/"+list1[i]);
+                System.out.println("刪除檔案: "+file.delete());
+            }
+        }
+
     }
 }

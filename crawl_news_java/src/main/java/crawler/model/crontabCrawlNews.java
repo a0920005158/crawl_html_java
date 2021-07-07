@@ -45,7 +45,7 @@ public class crontabCrawlNews {
                 }
                 new LoggerTool("log");
                 LoggerTool.infoMsg(nowTime+" crawl_news",
-                        "sqlInsetError: "+sqlInsetSuccess+" ,sqlInsetError: "+sqlInsetError);
+                        "sqlInsetSuccess: "+sqlInsetSuccess+" ,sqlInsetError: "+sqlInsetError);
             }
         } catch (IOException e) {
             LoggerTool.infoMsg(this.nowTime+" excutError","處理 IOException 錯誤: " + e);
