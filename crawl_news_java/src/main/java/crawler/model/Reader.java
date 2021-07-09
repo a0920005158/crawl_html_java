@@ -60,10 +60,10 @@ public class Reader {
         }
 
         this.okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(15, TimeUnit.SECONDS).cookieJar(this.cookieJar)
-                .connectionPool(new ConnectionPool(32,15,TimeUnit.MINUTES)).build();
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS).cookieJar(this.cookieJar)
+                .connectionPool(new ConnectionPool(32,10,TimeUnit.MINUTES)).build();
 
         String body = PostData_Request(configList.getUrl(),"GET",configList.getTitleHeader(),new HashMap<>());
         if (body == "false") {
@@ -81,12 +81,12 @@ public class Reader {
         Request request = new Request.Builder().url(requestUrl).post(requestBody).build();
         Response response = null;
         Integer errorTime = 0;
-        while (response == null && errorTime < 5) {
+        while (response == null && errorTime <= 7) {
             try {
                 response = this.okHttpClient.newCall(request).execute();
             }catch (SocketTimeoutException te){
-                response = this.okHttpClient.newCall(request).execute();
-                if(errorTime==4)
+                response = null;
+                if(errorTime==7)
                     LoggerTool.infoMsg(this.nowTime+" excutError","處理 connectTimeout 錯誤: " + te);
             }
             errorTime++;
@@ -179,10 +179,15 @@ public class Reader {
         html = html.replaceAll("/<iframe(.*?)</iframe>/i", "");
         html = html.replaceAll("/<link(.*?)>/i", "");
         html = html.replaceAll("/<!--(.*?)-->/i", "");
+        html = html.replaceAll("/<img src=\"(.*?)gif\"(.*?)>/i", "");
+        html = html.replaceAll("/<a href=\"javascript:;\">(.*?)</a>/i", "");
         Document contentDoc = Jsoup.parse(html);
         switch (this.urlName){
             case "tags":
                 contentDoc.select(".article-notice").remove();
+                contentDoc.select(".otherContent_01").remove();
+                contentDoc.select(".article-video").remove();
+                contentDoc.select(".news_weixin_ercode").remove();
                 html = contentDoc.html();
                 break;
         }

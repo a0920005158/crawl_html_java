@@ -1,0 +1,3 @@
+50287 INFO  2021-07-09 10:24:55911_2021-07-09 excutError 處理 IOException 錯誤: java.net.SocketTimeoutException: timeout
+31117 INFO  2021-07-09 10:25:4763_2021-07-09 excutError 處理 IOException 錯誤: java.net.SocketTimeoutException: timeout
+145298 INFO  2021-07-09 10:30:08257_2021-07-09 excutError 處理 IOException 錯誤: java.net.SocketTimeoutException: timeout
