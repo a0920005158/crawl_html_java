@@ -112,11 +112,11 @@ public class MySQL {
         }catch(SQLException se){
             // 處理 JDBC 錯誤
             se.printStackTrace();
-            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + se+ " SQL"+sql);
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + se+ " SQL: "+sql);
         }catch(Exception e){
             // 處理 Class.forName 錯誤
             e.printStackTrace();
-            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + e+ " SQL"+sql);
+            LoggerTool.infoMsg(this.nowTime+" excutError","處理 Class.forName 錯誤: " + e+ " SQL: "+sql);
         }finally{
             // 關閉資源
             try{

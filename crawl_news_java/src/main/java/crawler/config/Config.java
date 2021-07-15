@@ -32,7 +32,7 @@ public class Config {
                         "div.feeds_li_p img",
                         "div.feeds_li_meta .fl a",
                         "h3.feeds_li_title a",
-                        "div.article",
+                        "div.article,div.article-box",
                         "p",
                         "img",
                         new HashMap(){{

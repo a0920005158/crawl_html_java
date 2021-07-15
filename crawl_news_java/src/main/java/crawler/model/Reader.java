@@ -1,5 +1,6 @@
 package crawler.model;
 
+import crawler.components.filterHtml;
 import org.json.JSONArray;
 import org.jsoup.select.Elements;
 import crawler.config.*;
@@ -173,14 +174,7 @@ public class Reader {
     }
 
     private String contentFilter(String html){
-        html = html.replaceAll("/<script(.*?)</script>/i", "");
-        html = html.replaceAll("/<style(.*?)/style>/i", "");
-        html = html.replaceAll("/<frame(.*?)>/i", "");
-        html = html.replaceAll("/<iframe(.*?)</iframe>/i", "");
-        html = html.replaceAll("/<link(.*?)>/i", "");
-        html = html.replaceAll("/<!--(.*?)-->/i", "");
-        html = html.replaceAll("/<img src=\"(.*?)gif\"(.*?)>/i", "");
-        html = html.replaceAll("/<a href=\"javascript:;\">(.*?)</a>/i", "");
+        html = filterHtml.Html2Text(html);
         Document contentDoc = Jsoup.parse(html);
         switch (this.urlName){
             case "tags":
@@ -235,7 +229,7 @@ public class Reader {
         Integer cieindex = 0;
         for (Element ciElement: contentList.select(CISelector)){
             String imgSrc = ciElement.attr("src");
-            if(this.urlName=="tags"){
+            if(this.urlName=="tags"&&!imgSrc.contains("http")){
                 imgSrc = "http:"+imgSrc;
             }else if(this.urlName=="xinhuanet"){
                 String[] urlA = contentUrl.split("/");

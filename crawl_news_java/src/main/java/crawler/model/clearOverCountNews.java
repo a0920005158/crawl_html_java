@@ -25,13 +25,13 @@ public class clearOverCountNews {
                 String image_title = deteData.get("image_title").toString();
                 String image_content = deteData.get("image_content").toString();
                 MySQL.update("DELETE FROM news_title_image WHERE id="+image_title);
-                    for (String conid : image_content.split(",")){
-                        MySQL.update("DELETE FROM news_content_image WHERE id="+conid);
-                    }
-                    Integer deleteNewsId = MySQL.update("DELETE FROM news WHERE id="+id);
-                    successId.add(
-                            id
-                    );
+                for (String conid : image_content.split(",")){
+                    MySQL.update("DELETE FROM news_content_image WHERE id="+conid);
+                }
+                Integer deleteNewsId = MySQL.update("DELETE FROM news WHERE id="+id);
+                successId.add(
+                        id
+                );
             }
         }
         return "successId: "+successId.toString();
