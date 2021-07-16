@@ -182,6 +182,7 @@ public class Reader {
                 contentDoc.select(".otherContent_01").remove();
                 contentDoc.select(".article-video").remove();
                 contentDoc.select(".news_weixin_ercode").remove();
+                contentDoc.select(".appendQr_wrap").remove();
                 html = contentDoc.html();
                 break;
         }
