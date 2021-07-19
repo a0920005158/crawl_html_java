@@ -247,7 +247,7 @@ public class Reader {
             MySQL MySQL = new MySQL();
             Integer contentId = MySQL.update("insert into news_content_image(image_blob) values('"+contentImgBase64+"')");
             if(contentId!=-1){
-                this.contnetText = this.contnetText.replaceAll("<img src=\""+ciElement.attr("src")+"\"(.*?)>", "^[%"+contentId+"%]^");
+                this.contnetText = this.contnetText.replaceAll("<img (.*?)src=\""+ciElement.attr("src")+"\"(.*?)>", "^[%"+contentId+"%]^");
                 if(cieindex!=0)
                     contentImgRouteT+=",";
                 contentImgRouteT+=Integer.toString(contentId);

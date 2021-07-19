@@ -29,7 +29,7 @@ public class filterHtml {
             String regEx_iframe = "<[\\s]*?iframe[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?iframe[\\s]*?>"; // 定義HTML標簽的正則表達式
             String regEx_link = "<[\\s]*?link[^>]*?>"; // 定義HTML標簽的正則表達式
             String regEx_comment = "<!--[\\s]*?[^>]*?-->"; // 定義HTML標簽的正則表達式
-            String regEx_gif = "<img src=\"(.*?)gif\"(.*?)>"; // 定義HTML標簽的正則表達式
+            String regEx_gif = "<img (.*?)src=\"(.*?)gif\"(.*?)>"; // 定義HTML標簽的正則表達式
             String regEx_a_script = "<a href=\"javascript:;\">(.*?)</a>"; // 定義HTML標簽的正則表達式
             String regEx_apostrophe = "'";
 
