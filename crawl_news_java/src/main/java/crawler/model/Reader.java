@@ -230,6 +230,9 @@ public class Reader {
         Integer cieindex = 0;
         for (Element ciElement: contentList.select(CISelector)){
             String imgSrc = ciElement.attr("src");
+            if (imgSrc=="")
+                continue;
+
             if(this.urlName=="tags"&&!imgSrc.contains("http")){
                 imgSrc = "http:"+imgSrc;
             }else if(this.urlName=="xinhuanet"){
