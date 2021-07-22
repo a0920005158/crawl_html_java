@@ -3,10 +3,6 @@ package crawler;
 import crawler.model.LoggerTool;
 import crawler.model.clearOverCountNews;
 import crawler.model.crontabCrawlNews;
-import org.apache.log4j.BasicConfigurator;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
-import static org.quartz.CronScheduleBuilder.*;
 
 import java.io.IOException;
 import java.text.ParseException;
