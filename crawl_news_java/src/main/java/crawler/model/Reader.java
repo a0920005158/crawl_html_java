@@ -230,7 +230,7 @@ public class Reader {
         Integer cieindex = 0;
         for (Element ciElement: contentList.select(CISelector)){
             String imgSrc = ciElement.attr("src");
-            if (imgSrc=="")
+            if (imgSrc==""||imgSrc.contains("gif"))
                 continue;
 
             if(this.urlName=="tags"&&!imgSrc.contains("http")){
