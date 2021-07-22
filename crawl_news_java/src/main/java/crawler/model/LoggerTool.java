@@ -7,6 +7,7 @@ import org.apache.log4j.PatternLayout;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,7 +46,10 @@ public class LoggerTool {
         for (int i = 0; i < list1.length; i++) {
             SimpleDateFormat sdf =   new SimpleDateFormat( "yyyy-MM-dd" );
             System.out.println(list1[i]);
-            Date createDate = sdf.parse(list1[i].split(" ")[0]);
+            String fileDate = list1[i].split(" ")[0];
+            if(fileDate.equals(""))
+                continue;
+            Date createDate = sdf.parse(fileDate);
             System.out.println(createDate);
             Calendar now = java.util.Calendar.getInstance();
             now.add(Calendar.DATE,-3); //3天前日期
