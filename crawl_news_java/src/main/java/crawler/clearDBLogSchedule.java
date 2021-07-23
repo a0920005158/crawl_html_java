@@ -12,7 +12,7 @@ import java.util.Date;
 public class clearDBLogSchedule implements Job {
     @Override
     public void execute(JobExecutionContext context) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String nowTime = sdf.format(new Date());
 
         // 從context中獲取屬性

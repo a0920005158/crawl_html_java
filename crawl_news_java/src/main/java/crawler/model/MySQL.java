@@ -18,7 +18,7 @@ public class MySQL {
 
     public MySQL() {
         Map<String,String> dbConfig = getDBConfig();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         this.DB_URL = "jdbc:mysql://"+dbConfig.get("host")+":"+dbConfig.get("port")+"/"+getDBConfig().get("dbName");
         this.username = dbConfig.get("username");
         this.password = dbConfig.get("password");
