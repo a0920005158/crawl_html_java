@@ -1,5 +1,6 @@
 crawler\components\filterHtml.class
 crawler\config\Config$1$1.class
+META-INF\MANIFEST.MF
 crawler\config\Config$1$6.class
 crawler\model\LoggerTool.class
 crawler\model\Reader.class

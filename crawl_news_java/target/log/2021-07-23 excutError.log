@@ -1,1 +1,0 @@
-3    INFO  2021-07-23 _2021-07-23 excutError ??•ç?? Exception ?Œ¯èª?: java.lang.NullPointerException: Cannot invoke "java.util.Map.get(Object)" because "dbConfig" is null
