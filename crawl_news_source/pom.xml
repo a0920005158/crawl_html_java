@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>crawl_news_java</artifactId>
+    <version>1.0</version>
+
+    <build>
+    	<plugins>
+            <!-- 專案發布build套件(class) -->
+    		<plugin>
+    			<groupId>org.apache.maven.plugins</groupId>
+    			<artifactId>maven-jar-plugin</artifactId>
+    			<version>2.6</version>
+    			<configuration>
+    				<archive>
+    					<manifest>
+    						<addClasspath>true</addClasspath>
+    						<classpathPrefix>lib/</classpathPrefix>
+    						<mainClass>crawler.Quartz</mainClass>
+    					</manifest>
+    				</archive>
+    			</configuration>
+    		</plugin>
+            <!-- 專案發布build套件(使用插件) -->
+    		<plugin>
+    			<groupId>org.apache.maven.plugins</groupId>
+    			<artifactId>maven-dependency-plugin</artifactId>
+    			<version>2.10</version>
+    			<executions>
+    				<execution>
+    					<id>copy-dependencies</id>
+    					<phase>package</phase>
+    					<goals>
+    						<goal>copy-dependencies</goal>
+    					</goals>
+    					<configuration>
+    						<outputDirectory>${project.build.directory}/lib</outputDirectory>
+    					</configuration>
+    				</execution>
+    			</executions>
+    		</plugin>
+
+    	</plugins>
+    </build>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- http請求插件 -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+        <!-- html分析為物件seletor插件 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+        <!-- 單元測試插件(現在沒用可以拿掉) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.0-M1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- json轉物件處理插件 -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+        <!-- crontab插件 -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <!-- 產生log檔插件 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/avalon-logkit/avalon-logkit -->
+        <!-- 產生log檔插件(現在沒用可以拿掉) -->
+        <dependency>
+            <groupId>avalon-logkit</groupId>
+            <artifactId>avalon-logkit</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <!-- mysql JDBC插件 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.19</version>
+        </dependency>
+    </dependencies>
+</project>
